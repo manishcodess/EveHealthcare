@@ -12,6 +12,7 @@ async function startServer() {
 
     server = app.listen(env.PORT, () => {
       console.log(`🚀 EVE Healthcare Backend running in [${env.NODE_ENV}] mode on port ${env.PORT}`);
+      console.log(`📚 Swagger UI Docs available at: http://localhost:${env.PORT}/api-docs`);
       console.log(`🩺 Health check available at: http://localhost:${env.PORT}/health`);
       console.log(`🌐 Base API available at: http://localhost:${env.PORT}/api`);
     });
