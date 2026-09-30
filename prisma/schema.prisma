@@ -87,7 +87,7 @@ model Booking {
   centre          DiagnosticCentre    @relation(fields: [centreId], references: [id], onDelete: Restrict)
   test            DiagnosticTest      @relation(fields: [testId], references: [id], onDelete: Restrict)
   offering        CentreTestOffering? @relation(fields: [offeringId], references: [id], onDelete: SetNull)
-  payment         Payment?
+  payments        Payment[]
 
   @@index([userId])
   @@index([centreId])
@@ -104,15 +104,30 @@ enum PaymentStatus {
 
 model Payment {
   id            String        @id @default(uuid())
-  bookingId     String        @unique
+  bookingId     String
+  eventId       String?       @unique
   amount        Decimal       @db.Decimal(10, 2)
-  status        PaymentStatus @default(PENDING)
+  status        PaymentStatus @default(SUCCESS)
   transactionId String?       @unique
-  paymentMethod String?
+  paymentMethod String?       @default("MOCK_GATEWAY")
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
   booking       Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 
+  @@index([bookingId])
   @@map("payments")
+}
+
+model WebhookEvent {
+  id          String    @id @default(uuid())
+  eventId     String    @unique
+  bookingId   String
+  eventType   String    @default("payment.updated")
+  status      String
+  payload     String?   @db.Text
+  processedAt DateTime  @default(now())
+
+  @@index([bookingId])
+  @@map("webhook_events")
 }

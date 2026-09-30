@@ -183,6 +183,16 @@ export class BookingService {
             email: true,
           },
         },
+        payments: {
+          select: {
+            id: true,
+            amount: true,
+            status: true,
+            transactionId: true,
+            paymentMethod: true,
+            createdAt: true,
+          },
+        },
       },
     });
 
@@ -205,6 +215,70 @@ export class BookingService {
       user: booking.user,
       centre: booking.centre,
       test: booking.test,
+      payments: booking.payments.map((p) => ({
+        id: p.id,
+        amount: Number(p.amount),
+        status: p.status,
+        transactionId: p.transactionId,
+        paymentMethod: p.paymentMethod,
+        createdAt: p.createdAt,
+      })),
+    };
+  }
+
+  /**
+   * Cancels an existing booking for the authenticated user
+   * @param {string} bookingId
+   * @param {string} userId
+   */
+  static async cancelBooking(bookingId, userId) {
+    const booking = await prisma.booking.findUnique({
+      where: { id: bookingId },
+      include: {
+        centre: { select: { id: true, name: true, location: true } },
+        test: { select: { id: true, name: true } },
+      },
+    });
+
+    if (!booking) {
+      throw new NotFoundError(`Booking with ID '${bookingId}' was not found`);
+    }
+
+    // Ownership check
+    if (booking.userId !== userId) {
+      throw new ForbiddenError('You do not have permission to cancel this booking');
+    }
+
+    // State check
+    if (booking.status === BookingStatus.CANCELLED) {
+      throw new BadRequestError('Booking is already cancelled');
+    }
+
+    if (booking.status === BookingStatus.FAILED) {
+      throw new BadRequestError('Cannot cancel a booking that has already failed');
+    }
+
+    if (new Date(booking.appointmentDate) <= new Date()) {
+      throw new BadRequestError('Cannot cancel past appointments');
+    }
+
+    const updatedBooking = await prisma.booking.update({
+      where: { id: bookingId },
+      data: { status: BookingStatus.CANCELLED },
+      include: {
+        centre: { select: { id: true, name: true, location: true } },
+        test: { select: { id: true, name: true } },
+      },
+    });
+
+    return {
+      id: updatedBooking.id,
+      status: updatedBooking.status,
+      amount: Number(updatedBooking.amount),
+      appointmentDate: updatedBooking.appointmentDate,
+      cancelledAt: updatedBooking.updatedAt,
+      centre: updatedBooking.centre,
+      test: updatedBooking.test,
     };
   }
 }

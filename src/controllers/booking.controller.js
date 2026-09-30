@@ -55,4 +55,20 @@ export class BookingController {
       next(error);
     }
   }
+
+  /**
+   * Cancel an existing booking
+   * PATCH /api/bookings/:id/cancel
+   */
+  static async cancelBooking(req, res, next) {
+    try {
+      const userId = req.user.id;
+      const { id } = req.params;
+
+      const result = await BookingService.cancelBooking(id, userId);
+      return sendSuccess(res, result, 200, 'Booking cancelled successfully');
+    } catch (error) {
+      next(error);
+    }
+  }
 }

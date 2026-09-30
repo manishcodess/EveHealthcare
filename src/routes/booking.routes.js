@@ -19,4 +19,7 @@ router.get('/', validateQuery(getBookingsQuerySchema), BookingController.getMyBo
 // GET /api/bookings/:id - Retrieve specific booking by ID (ownership enforced)
 router.get('/:id', validateParams(idParamSchema), BookingController.getBookingById);
 
+// PATCH /api/bookings/:id/cancel - Cancel an existing booking
+router.patch('/:id/cancel', validateParams(idParamSchema), BookingController.cancelBooking);
+
 export default router;

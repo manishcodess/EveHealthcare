@@ -7,6 +7,7 @@ async function main() {
   console.log('🌱 Seeding EVE Healthcare database...');
 
   // Clean up existing data in reverse order of foreign key dependency
+  await prisma.webhookEvent.deleteMany({});
   await prisma.payment.deleteMany({});
   await prisma.booking.deleteMany({});
   await prisma.centreTestOffering.deleteMany({});
