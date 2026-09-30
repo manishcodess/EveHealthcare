@@ -1,0 +1,48 @@
+{
+  "name": "eve-healthcare-backend",
+  "version": "1.0.0",
+  "description": "Production-ready backend service for diagnostic test bookings at EVE Healthcare",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "node src/server.js",
+    "start": "node src/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
+    "prisma:seed": "node prisma/seed.js",
+    "prisma:studio": "prisma studio",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "keywords": [
+    "healthcare",
+    "diagnostics",
+    "booking",
+    "express",
+    "prisma",
+    "postgresql"
+  ],
+  "author": "EVE Healthcare Team",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^6.4.1",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@embedded-postgres/windows-x64": "^18.4.0-beta.17",
+    "cross-env": "^7.0.3",
+    "embedded-postgres": "^18.4.0-beta.17",
+    "prisma": "^6.4.1",
+    "supertest": "^7.0.0",
+    "vitest": "^3.0.7"
+  }
+}
